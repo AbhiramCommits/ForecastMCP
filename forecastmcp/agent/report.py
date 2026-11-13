@@ -215,6 +215,7 @@ def collect_trace_numbers(records: Iterable[dict[str, Any]]) -> list[float]:
     numbers: list[float] = []
 
     def visit(value: Any) -> None:
+        """Walk payloads recursively and collect every numeric token."""
         if isinstance(value, bool) or value is None:
             return
         if isinstance(value, (int, float)):

@@ -284,9 +284,3 @@ class PromoSeasonalNaive(BaseForecaster):
             metadata={"family": "covariate-baseline", "promo_lift": round(lift, 6)},
         )
 
-
-BASELINE_KINDS = {
-    "seasonal_naive": "seasonal_naive",
-    "autoets": "autoets",
-    "autotheta": "autotheta",
-}

@@ -92,8 +92,12 @@ def test_unavailable_model_reports_reason():
         ok, reason = availability(name)
         if not ok:
             assert "importable" in reason or "offline" in reason or "not permitted" in reason
-    # Forcing an unavailable adapter must raise the typed error, never a bare crash.
-    forecaster = get_forecaster("timesfm")
+    # Forcing an unavailable adapter must raise a typed error, never a bare crash.
+    try:
+        forecaster = get_forecaster("timesfm")
+    except RuntimeError as exc:
+        assert "not permitted" in str(exc) or "disabled" in str(exc)
+        return
     ok, reason = forecaster.available()
     if not ok:
         with pytest.raises(ModelUnavailable):

@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FORECASTMCP_OFFLINE: "1"
+      FORECASTMCP_SEED: "42"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install CPU torch and package
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check forecastmcp tests
+      - name: Tests with coverage
+        run: |
+          pytest --cov=forecastmcp.eval --cov=forecastmcp.mcp --cov=forecastmcp.agent \
+            --cov-report=term-missing --cov-fail-under=80
+      - name: Fast offline pipeline smoke run
+        run: scripts/run_all.sh --fast
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: forecastmcp-results
+          path: |
+            results/
+            artifacts/runs/
+          if-no-files-found: warn

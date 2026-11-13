@@ -42,16 +42,22 @@ class FinetunedChronosForecaster(ChronosForecaster):
 
     def available(self) -> tuple[bool, str]:
         """Check package, adapter files and base-checkpoint cache in offline mode."""
-        ok, reason = super().available()
+        from forecastmcp.config import is_offline
+        from forecastmcp.forecasters.chronos_fm import _chronos_import
+
+        ok, reason = _chronos_import()
         if not ok:
             return False, reason
+        if self._load_error:
+            return False, self._load_error
         ok, reason = self.adapter_ready()
         if not ok:
             return False, reason
-        from forecastmcp.config import is_offline
-
-        if is_offline() and not _checkpoint_cached(self.base_checkpoint):
-            return False, f"offline: base checkpoint {self.base_checkpoint!r} not cached"
+        if is_offline():
+            if self.base_checkpoint != "amazon/chronos-t5-tiny":
+                return False, "offline mode: only the chronos-t5-tiny base is permitted"
+            if not _checkpoint_cached(self.base_checkpoint):
+                return False, f"offline: base checkpoint {self.base_checkpoint!r} not cached"
         return True, "base + adapter available"
 
     def _ensure_pipeline(self):

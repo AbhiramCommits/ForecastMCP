@@ -24,6 +24,7 @@ class WindowRequest:
 
     @property
     def horizon(self) -> int:
+        """Forecast horizon after clipping to the frozen test window."""
         return self.request.horizon
 
 

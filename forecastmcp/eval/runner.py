@@ -74,6 +74,7 @@ def _combined_metric_row(
     q = np.asarray(combined.quantiles, dtype=float)
 
     def q_at(level: float) -> np.ndarray:
+        """Return the nearest stored quantile row to a requested level."""
         idx = int(np.argmin(np.abs(np.asarray(levels) - level)))
         return q[idx]
 

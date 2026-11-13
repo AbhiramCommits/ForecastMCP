@@ -143,10 +143,26 @@ def build_server(
     return server, rt
 
 
-def serve_stdio(role: str = "analyst", run_id: str | None = None) -> None:
-    """Run the MCP server over stdio (blocks until the client disconnects)."""
+def serve(
+    transport: str = "stdio",
+    role: str = "analyst",
+    run_id: str | None = None,
+    host: str = "127.0.0.1",
+    port: int = 8000,
+) -> None:
+    """Run the MCP server (``stdio`` or ``streamable-http``)."""
     server, runtime = build_server(role=role, runtime=ToolRuntime(run_id=run_id, role=role))
     try:
-        server.run("stdio")
+        if transport == "stdio":
+            server.run("stdio")
+        elif transport == "streamable-http":
+            server.run("streamable-http", host=host, port=port)
+        else:
+            raise ValueError(f"unknown transport {transport!r}")
     finally:
         runtime.close()
+
+
+def serve_stdio(role: str = "analyst", run_id: str | None = None) -> None:
+    """Backward-compatible stdio entry point."""
+    serve("stdio", role=role, run_id=run_id)

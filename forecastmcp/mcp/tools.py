@@ -429,6 +429,7 @@ def stable_payload(payload: dict[str, Any]) -> dict[str, Any]:
     volatile = {"latency_ms": 0.0}
 
     def scrub(value: Any) -> Any:
+        """Recursively replace wall-clock fields with deterministic zeros."""
         if isinstance(value, dict):
             out = {}
             for key, item in value.items():
