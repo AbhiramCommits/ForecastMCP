@@ -1,0 +1,1 @@
+"""ForecastMCP mcp package."""

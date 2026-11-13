@@ -1,0 +1,79 @@
+version: 1
+frozen: true
+datasets:
+  synthetic_supply:
+    freq: D
+    horizon: 28
+    n_windows: 6
+    n_series: 200
+    history_start: '2022-01-01 00:00:00'
+    history_end: '2025-12-31 00:00:00'
+    windows:
+    - window_id: 1
+      train_start: '2022-01-01 00:00:00'
+      train_end: '2025-07-16 00:00:00'
+      test_start: '2025-07-17 00:00:00'
+      test_end: '2025-08-13 00:00:00'
+    - window_id: 2
+      train_start: '2022-01-01 00:00:00'
+      train_end: '2025-08-13 00:00:00'
+      test_start: '2025-08-14 00:00:00'
+      test_end: '2025-09-10 00:00:00'
+    - window_id: 3
+      train_start: '2022-01-01 00:00:00'
+      train_end: '2025-09-10 00:00:00'
+      test_start: '2025-09-11 00:00:00'
+      test_end: '2025-10-08 00:00:00'
+    - window_id: 4
+      train_start: '2022-01-01 00:00:00'
+      train_end: '2025-10-08 00:00:00'
+      test_start: '2025-10-09 00:00:00'
+      test_end: '2025-11-05 00:00:00'
+    - window_id: 5
+      train_start: '2022-01-01 00:00:00'
+      train_end: '2025-11-05 00:00:00'
+      test_start: '2025-11-06 00:00:00'
+      test_end: '2025-12-03 00:00:00'
+    - window_id: 6
+      train_start: '2022-01-01 00:00:00'
+      train_end: '2025-12-03 00:00:00'
+      test_start: '2025-12-04 00:00:00'
+      test_end: '2025-12-31 00:00:00'
+  m4_daily:
+    freq: D
+    horizon: 28
+    n_windows: 6
+    n_series: 50
+    history_start: '1750-01-01 00:00:00'
+    history_end: '1752-10-02 00:00:00'
+    windows:
+    - window_id: 1
+      train_start: '1750-01-01 00:00:00'
+      train_end: '1752-04-17 00:00:00'
+      test_start: '1752-04-18 00:00:00'
+      test_end: '1752-05-15 00:00:00'
+    - window_id: 2
+      train_start: '1750-01-01 00:00:00'
+      train_end: '1752-05-15 00:00:00'
+      test_start: '1752-05-16 00:00:00'
+      test_end: '1752-06-12 00:00:00'
+    - window_id: 3
+      train_start: '1750-01-01 00:00:00'
+      train_end: '1752-06-12 00:00:00'
+      test_start: '1752-06-13 00:00:00'
+      test_end: '1752-07-10 00:00:00'
+    - window_id: 4
+      train_start: '1750-01-01 00:00:00'
+      train_end: '1752-07-10 00:00:00'
+      test_start: '1752-07-11 00:00:00'
+      test_end: '1752-08-07 00:00:00'
+    - window_id: 5
+      train_start: '1750-01-01 00:00:00'
+      train_end: '1752-08-07 00:00:00'
+      test_start: '1752-08-08 00:00:00'
+      test_end: '1752-09-04 00:00:00'
+    - window_id: 6
+      train_start: '1750-01-01 00:00:00'
+      train_end: '1752-09-04 00:00:00'
+      test_start: '1752-09-05 00:00:00'
+      test_end: '1752-10-02 00:00:00'

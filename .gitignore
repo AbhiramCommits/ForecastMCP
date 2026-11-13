@@ -1,0 +1,16 @@
+data/raw/
+data/processed/
+*.duckdb
+*.duckdb.wal
+.venv/
+__pycache__/
+*.pyc
+artifacts/runs/
+artifacts/finetune/*/*.safetensors
+artifacts/finetune/*/checkpoint-*
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.DS_Store
+*.egg-info/

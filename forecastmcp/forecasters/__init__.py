@@ -1,0 +1,1 @@
+"""ForecastMCP forecasters package."""

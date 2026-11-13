@@ -1,0 +1,1 @@
+"""ForecastMCP agent package."""
