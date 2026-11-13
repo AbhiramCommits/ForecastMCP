@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
+from functools import lru_cache
 from typing import Any, Protocol, runtime_checkable
 
 import numpy as np
@@ -238,6 +239,7 @@ class BaseForecaster(ABC):
         )
 
 
+@lru_cache(maxsize=64)
 def resolve_revision(checkpoint: str, fallback: str = "unknown") -> str:
     """Look up the Hugging Face commit SHA for a checkpoint.
 

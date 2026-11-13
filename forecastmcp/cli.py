@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 import typer
 
 from forecastmcp import __version__
@@ -19,7 +18,7 @@ from forecastmcp.data.loaders import (
     dataset_summary,
     load_dataset,
 )
-from forecastmcp.data.splits import freeze_holdout, holdout_windows, load_holdout
+from forecastmcp.data.splits import freeze_holdout, load_holdout
 from forecastmcp.data.store import get_store
 from forecastmcp.forecasters.base import ForecastRequest, ModelUnavailable
 from forecastmcp.forecasters.registry import (
@@ -195,34 +194,12 @@ def models_card(model: str = typer.Option(..., "--model", "-m", help="Model name
 
 
 def _build_request(dataset: str, series_id: str, horizon: int, window_id: int) -> ForecastRequest:
-    from forecastmcp.data.loaders import get_series
+    from forecastmcp.data.requests import build_window_request
 
     df = load_dataset(dataset)
-    windows = holdout_windows(dataset)
-    window = next((w for w in windows if w.window_id == window_id), None)
-    if window is None:
-        raise typer.BadParameter(f"window {window_id} not in frozen holdout")
-    series = get_series(df, series_id)
-    ts = series["timestamp"]
-    train = series[ts <= window.train_end_ts]
-    test = series[(ts >= window.test_start_ts) & (ts <= window.test_end_ts)]
-    if train.empty or test.empty:
-        raise typer.BadParameter(f"series {series_id} does not cover window {window_id}")
-    horizon = min(horizon, len(test))
-    context = train["target"].to_numpy(dtype=float).tolist()
-    cov_cols = [c for c in ("promo", "lead_time_days", "unit_price") if c in series.columns]
-    return ForecastRequest(
-        series_id=series_id,
-        context=context,
-        horizon=horizon,
-        timestamps=np.asarray(train["timestamp"].dt.to_pydatetime()).tolist(),
-        freq=window.freq,
-        past_covariates={c: train[c].to_numpy(dtype=float).tolist() for c in cov_cols},
-        future_covariates={
-            c: test[c].to_numpy(dtype=float).tolist()[:horizon] for c in cov_cols
-        },
-        seed=42,
-    )
+    return build_window_request(
+        df, dataset, series_id, horizon=horizon, window_id=window_id, covariates=True
+    ).request
 
 
 @app.command("forecast")
@@ -283,6 +260,55 @@ def forecast_cmd(
 def version_cmd() -> None:
     """Print the package version."""
     typer.echo(f"forecastmcp {__version__}")
+
+
+@app.command("serve")
+def serve_cmd(
+    role: str = typer.Option("analyst", "--role", help="Permission role (analyst|admin)."),
+    run_id: str | None = typer.Option(None, "--run-id", help="Explicit trace run id."),
+) -> None:
+    """Run the MCP server over stdio."""
+    from forecastmcp.mcp.server import serve_stdio
+
+    serve_stdio(role=role, run_id=run_id)
+
+
+@app.command("ask")
+def ask_cmd(
+    question: str = typer.Argument(..., help="Natural-language forecasting question."),
+    role: str = typer.Option("analyst", "--role", help="Permission role (analyst|admin)."),
+    run_id: str | None = typer.Option(None, "--run-id", help="Explicit trace run id."),
+    print_report: bool = typer.Option(True, "--print/--no-print", help="Print the report."),
+) -> None:
+    """Run the agent loop and write a citation-checked report."""
+    from forecastmcp.agent.loop import ForecastAgent
+
+    agent = ForecastAgent(run_id=run_id, role=role)
+    result = agent.run_sync(question)
+    typer.echo(f"run_id: {result.run_id}")
+    typer.echo(f"plan: {result.plan.source} planner, models={result.plan.models}, "
+               f"series={result.plan.series_id}, horizon={result.plan.horizon}")
+    typer.echo(f"chosen: {result.chosen_model} | calls: {len(result.calls)} | "
+               f"cost: ${result.guard['cost_usd']:.6f} | "
+               f"elapsed: {result.guard['elapsed_seconds']:.1f}s")
+    typer.echo(f"report: {result.report_path}")
+    if print_report:
+        typer.echo("\n" + result.report)
+
+
+@app.command("replay")
+def replay_cmd(
+    run_id: str = typer.Argument(..., help="Run id under artifacts/runs/."),
+) -> None:
+    """Re-execute a traced run and assert byte-identical outputs."""
+    import json as _json
+
+    from forecastmcp.obs.replay import replay
+
+    report = replay(run_id)
+    typer.echo(_json.dumps(report.to_dict(), indent=2))
+    if not report.ok:
+        raise typer.Exit(code=1)
 
 
 def main() -> None:

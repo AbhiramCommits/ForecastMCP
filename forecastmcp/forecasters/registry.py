@@ -161,6 +161,11 @@ def estimate_cost(name: str, latency_ms: float, device: str = "cpu") -> float:
     return round(max(configured, measured), 8)
 
 
+def configured_cost(name: str) -> float:
+    """Deterministic per-call price from configs/costs.yaml (used in tool outputs)."""
+    return float((cost_config().get("forecasters") or {}).get(name, 0.0))
+
+
 def available_names() -> list[str]:
     """Names of models that are currently usable."""
     return [row["name"] for row in list_forecasters() if row["available"]]
