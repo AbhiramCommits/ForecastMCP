@@ -57,6 +57,7 @@ models:
     context_length: 512
     device: cpu
     cost_per_call_usd: 0.00040
+    num_samples: 20
     n_params: 8394496
     supports_covariates: false
     training_domain: "large-scale public time-series corpora (Chronos T5 tokenization)"
@@ -81,6 +82,8 @@ models:
     context_length: 512
     device: cpu
     cost_per_call_usd: 0.00042
+    num_samples: 20
+    n_params: 8492800
     supports_covariates: false
     training_domain: "Chronos T5 tiny domain-adapted with LoRA on supply-chain demand"
     description: "LoRA adapter trained on the synthetic supply-chain train split."

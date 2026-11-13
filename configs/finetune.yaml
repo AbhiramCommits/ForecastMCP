@@ -1,0 +1,25 @@
+# CPU/MPS fine-tuning profile: Chronos T5 tiny + LoRA, targeting well under 20 minutes.
+tag: v1
+base_checkpoint: amazon/chronos-t5-tiny
+dataset: synthetic_supply
+window_id: 1
+context_length: 512
+horizon: 64
+max_windows: 320
+val_fraction: 0.15
+series_limit: 60
+lora:
+  r: 4
+  alpha: 8
+  dropout: 0.05
+  target_modules: [q, k, v, o]
+training:
+  epochs: 3
+  batch_size: 8
+  learning_rate: 0.0005
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  patience: 2
+  seed: 42
+  device: cpu
+  max_grad_norm: 1.0

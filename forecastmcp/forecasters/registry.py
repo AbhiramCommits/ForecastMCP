@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
-from forecastmcp.config import CONFIGS_DIR, is_offline, read_yaml
+from forecastmcp.config import CONFIGS_DIR, FINETUNE_DIR, ROOT, is_offline, read_yaml
 from forecastmcp.forecasters.base import BaseForecaster
 from forecastmcp.forecasters.baselines import PromoSeasonalNaive, StatsForecaster
 from forecastmcp.forecasters.chronos_fm import ChronosForecaster
@@ -36,6 +37,35 @@ def cost_config() -> dict[str, Any]:
     return read_yaml(COSTS_PATH, default={}) or {}
 
 
+def dynamic_config(name: str) -> dict[str, Any] | None:
+    """Synthesize registry config for a ``chronos-lora-<tag>`` adapter on disk."""
+    prefix = "chronos-lora-"
+    if not name.startswith(prefix):
+        return None
+    tag = name[len(prefix):]
+    adapter_dir = FINETUNE_DIR / tag
+    if not (adapter_dir / "adapter_config.json").exists():
+        return None
+    return {
+        "adapter": "finetuned",
+        "checkpoint": str(adapter_dir.relative_to(ROOT)),
+        "revision": tag,
+        "context_length": 512,
+        "device": "cpu",
+        "cost_per_call_usd": 0.00042,
+        "supports_covariates": False,
+        "training_domain": f"Chronos T5 tiny LoRA adapter {tag}",
+        "description": f"Domain-adapted Chronos adapter trained under tag {tag}.",
+    }
+
+
+def _config_for(name: str) -> dict[str, Any] | None:
+    cfg = model_configs().get(name)
+    if cfg is not None:
+        return cfg
+    return dynamic_config(name)
+
+
 def _instantiate(name: str, config: dict[str, Any]) -> BaseForecaster:
     adapter = config.get("adapter", name)
     if adapter == "baselines":
@@ -60,10 +90,9 @@ def get_forecaster(name: str) -> BaseForecaster:
     disabled or blocked by offline mode. Availability itself is *not* checked
     here so callers can report ``available: false`` instead of crashing.
     """
-    configs = model_configs()
-    if name not in configs:
-        raise KeyError(f"unknown model {name!r}; available: {sorted(configs)}")
-    config = configs[name]
+    config = _config_for(name)
+    if config is None:
+        raise KeyError(f"unknown model {name!r}; available: {sorted(model_configs())}")
     if config.get("enabled", True) is False:
         raise RuntimeError(f"model {name!r} is disabled in configs/models.yaml")
     if is_offline() and name not in OFFLINE_ALLOWED:
@@ -73,10 +102,10 @@ def get_forecaster(name: str) -> BaseForecaster:
 
 def availability(name: str) -> tuple[bool, str]:
     """Return availability without raising, including offline/disabled reasons."""
-    configs = model_configs()
-    if name not in configs:
+    config = _config_for(name)
+    if config is None:
         return False, f"unknown model {name!r}"
-    if configs[name].get("enabled", True) is False:
+    if config.get("enabled", True) is False:
         return False, "disabled in configs/models.yaml"
     if is_offline() and name not in OFFLINE_ALLOWED:
         return False, "not permitted in FORECASTMCP_OFFLINE=1 mode"
@@ -89,7 +118,13 @@ def availability(name: str) -> tuple[bool, str]:
 def list_forecasters(include_disabled: bool = False) -> list[dict[str, Any]]:
     """Return registry metadata plus live availability for every model."""
     rows = []
-    for name, config in model_configs().items():
+    configs = dict(model_configs())
+    if FINETUNE_DIR.exists():
+        for adapter_dir in sorted(FINETUNE_DIR.iterdir()):
+            name = f"chronos-lora-{adapter_dir.name}"
+            if (adapter_dir / "adapter_config.json").exists() and name not in configs:
+                configs[name] = dynamic_config(name) or {}
+    for name, config in configs.items():
         enabled = config.get("enabled", True) is not False
         if not enabled and not include_disabled:
             continue
@@ -117,10 +152,9 @@ def list_forecasters(include_disabled: bool = False) -> list[dict[str, Any]]:
 
 def model_card(name: str) -> dict[str, Any]:
     """Build a model card with availability, size, context and training domain."""
-    configs = model_configs()
-    if name not in configs:
+    config = _config_for(name)
+    if config is None:
         raise KeyError(f"unknown model {name!r}")
-    config = configs[name]
     ok, reason = availability(name)
     card = {
         "name": name,
@@ -139,9 +173,6 @@ def model_card(name: str) -> dict[str, Any]:
     }
     if config.get("adapter") == "finetuned":
         import json
-        from pathlib import Path
-
-        from forecastmcp.config import ROOT
 
         card_path = Path(config.get("checkpoint", ""))
         if not card_path.is_absolute():

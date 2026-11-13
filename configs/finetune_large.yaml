@@ -1,0 +1,25 @@
+# GPU profile for a larger Chronos checkpoint and adapter. Not run by default.
+tag: v1-large
+base_checkpoint: amazon/chronos-t5-small
+dataset: synthetic_supply
+window_id: 1
+context_length: 512
+horizon: 64
+max_windows: 4000
+val_fraction: 0.15
+series_limit: 200
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q, k, v, o]
+training:
+  epochs: 5
+  batch_size: 32
+  learning_rate: 0.0002
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  patience: 2
+  seed: 42
+  device: cuda
+  max_grad_norm: 1.0

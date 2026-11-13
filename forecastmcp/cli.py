@@ -256,6 +256,64 @@ def forecast_cmd(
 
 
 
+@finetune_app.callback(invoke_without_command=True)
+def finetune_root(
+    ctx: typer.Context,
+    dataset: str = typer.Option("synthetic_supply", "--dataset", "-d", help="Training dataset."),
+    tag: str = typer.Option("v1", "--tag", help="Adapter tag / output folder."),
+    config: str = typer.Option("configs/finetune.yaml", "--config", help="Fine-tune YAML."),
+) -> None:
+    """Train a LoRA adapter (runs when no subcommand is given)."""
+    if ctx.invoked_subcommand is not None:
+        return
+    from pathlib import Path
+
+    from forecastmcp.config import ROOT
+    from forecastmcp.finetune.train import TrainConfig, finetune
+
+    config_path = Path(config)
+    if not config_path.is_absolute():
+        config_path = ROOT / config_path
+    cfg = TrainConfig.load(config_path, tag=tag, dataset=dataset)
+    typer.echo(
+        f"fine-tuning {cfg.base_checkpoint} with LoRA r={cfg.lora_r} on {cfg.dataset} "
+        f"(device={cfg.device}, windows={cfg.max_windows})"
+    )
+    card = finetune(cfg, config_path=config_path)
+    typer.echo(
+        f"saved adapter+card to artifacts/finetune/{card['tag']} | "
+        f"trainable={card['trainable_params']} / total={card['total_params']} | "
+        f"best val quantile loss={card['best_val_quantile_loss']:.5f} | "
+        f"wall={card['wall_clock_seconds']:.1f}s"
+    )
+
+
+@finetune_app.command("compare")
+def finetune_compare(
+    tag: str = typer.Option("v1", "--tag", help="Adapter tag."),
+    dataset: str | None = typer.Option(None, "--dataset", "-d", help="Override dataset."),
+    series: int = typer.Option(20, "--series", min=1, help="Number of series to evaluate."),
+    windows: int = typer.Option(6, "--windows", min=1, help="Frozen windows to evaluate."),
+) -> None:
+    """Compare zero-shot Chronos against the fine-tuned adapter on the holdout."""
+    from forecastmcp.finetune.train import compare_finetuned
+
+    payload = compare_finetuned(tag, dataset=dataset, n_series=series, n_windows=windows)
+    names = list(payload["models"])
+    rows = []
+    for metric in ("WQL", "CRPS", "MASE", "coverage_80", "coverage_90"):
+        rows.append(
+            [metric]
+            + [f"{payload['models'][name][metric]:.4f}" for name in names]
+            + [f"{payload['delta'][metric]:+.4f}"]
+        )
+    print_table(["metric", *names, "delta"], rows)
+    typer.echo(
+        f"\n{payload['n_series']} series x {payload['n_windows']} frozen windows; "
+        f"results written to artifacts/finetune/{tag}/compare.json"
+    )
+
+
 @app.command("version")
 def version_cmd() -> None:
     """Print the package version."""

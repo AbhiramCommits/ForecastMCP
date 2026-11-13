@@ -6,8 +6,12 @@ data/processed/
 __pycache__/
 *.pyc
 artifacts/runs/
-artifacts/finetune/*/*.safetensors
-artifacts/finetune/*/checkpoint-*
+artifacts/finetune/**/model.safetensors
+artifacts/finetune/**/pytorch_model.bin
+artifacts/finetune/**/merged/
+artifacts/finetune/**/trainer/
+artifacts/finetune/**/best_adapter/
+artifacts/finetune/**/checkpoint-*
 .pytest_cache/
 .ruff_cache/
 htmlcov/

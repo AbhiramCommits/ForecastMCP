@@ -1,0 +1,20 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 4.184354501612046,
+    "val_quantile_loss": 25.66407881351628,
+    "improved": true
+  },
+  {
+    "epoch": 2,
+    "train_loss": 4.16581996048198,
+    "val_quantile_loss": 24.72060646589046,
+    "improved": true
+  },
+  {
+    "epoch": 3,
+    "train_loss": 4.158309943535748,
+    "val_quantile_loss": 24.144082913870424,
+    "improved": true
+  }
+]

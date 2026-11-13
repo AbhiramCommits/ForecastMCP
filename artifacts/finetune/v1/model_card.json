@@ -1,0 +1,67 @@
+{
+  "tag": "v1",
+  "base_checkpoint": "amazon/chronos-t5-tiny",
+  "revision": "29d808298f1a62493e7b9a5e08529d0d930fa189",
+  "dataset": "synthetic_supply",
+  "holdout_window_id": 1,
+  "train_end": "2025-07-16 00:00:00",
+  "context_length": 512,
+  "horizon": 64,
+  "lora_config": {
+    "r": 4,
+    "alpha": 8,
+    "dropout": 0.05,
+    "target_modules": [
+      "q",
+      "k",
+      "v",
+      "o"
+    ],
+    "task_type": "SEQ_2_SEQ_LM"
+  },
+  "trainable_params": 98304,
+  "total_params": 8492800,
+  "trainable_pct": 1.1575,
+  "n_train": 272,
+  "n_val": 48,
+  "n_series": 60,
+  "training": {
+    "epochs_configured": 3,
+    "batch_size": 8,
+    "learning_rate": 0.0005,
+    "scheduler": "cosine",
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.05,
+    "patience": 2,
+    "seed": 42,
+    "device": "cpu",
+    "train_loss": 4.169494801876592
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 4.184354501612046,
+      "val_quantile_loss": 25.66407881351628,
+      "improved": true
+    },
+    {
+      "epoch": 2,
+      "train_loss": 4.16581996048198,
+      "val_quantile_loss": 24.72060646589046,
+      "improved": true
+    },
+    {
+      "epoch": 3,
+      "train_loss": 4.158309943535748,
+      "val_quantile_loss": 24.144082913870424,
+      "improved": true
+    }
+  ],
+  "best_val_quantile_loss": 24.144082913870424,
+  "best_epoch": 3,
+  "stopped_early": false,
+  "wall_clock_seconds": 536.868,
+  "device": "cpu",
+  "covariates_used": [],
+  "config_path": "/Users/abhiramkasireddi/ForecastMCP/configs/finetune.yaml"
+}
