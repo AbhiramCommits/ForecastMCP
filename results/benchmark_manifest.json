@@ -1,0 +1,154 @@
+{
+  "run_id": "benchmark",
+  "seed": 42,
+  "n_resamples": 1000,
+  "eval_quantile_grid": [
+    0.05,
+    0.1,
+    0.2,
+    0.25,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.75,
+    0.8,
+    0.9,
+    0.95
+  ],
+  "datasets": {
+    "synthetic_supply": {
+      "n_series": 50,
+      "freq": "D",
+      "horizon": 28,
+      "n_windows": 6,
+      "window_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "models_requested": [
+        "seasonal_naive",
+        "autoets",
+        "autotheta",
+        "seasonal_naive_cov",
+        "chronos",
+        "chronos-lora-v1"
+      ],
+      "covariates": [
+        "promo",
+        "lead_time_days",
+        "unit_price",
+        "category",
+        "day_of_week",
+        "month",
+        "day_of_year",
+        "is_weekend",
+        "sin_annual_1",
+        "cos_annual_1",
+        "sin_annual_2",
+        "cos_annual_2",
+        "sin_week_1",
+        "cos_week_1"
+      ]
+    },
+    "m4_daily": {
+      "n_series": 23,
+      "freq": "D",
+      "horizon": 28,
+      "n_windows": 6,
+      "window_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "models_requested": [
+        "seasonal_naive",
+        "autoets",
+        "autotheta",
+        "chronos"
+      ],
+      "covariates": [
+        "promo",
+        "day_of_week",
+        "month",
+        "day_of_year",
+        "is_weekend",
+        "sin_annual_1",
+        "cos_annual_1",
+        "sin_annual_2",
+        "cos_annual_2",
+        "sin_week_1",
+        "cos_week_1"
+      ]
+    }
+  },
+  "unavailable_models": {
+    "synthetic_supply": {},
+    "m4_daily": {}
+  },
+  "model_availability": {
+    "seasonal_naive": {
+      "available": true,
+      "reason": "statsforecast importable",
+      "adapter": "baselines",
+      "enabled": true
+    },
+    "autoets": {
+      "available": true,
+      "reason": "statsforecast importable",
+      "adapter": "baselines",
+      "enabled": true
+    },
+    "autotheta": {
+      "available": true,
+      "reason": "statsforecast importable",
+      "adapter": "baselines",
+      "enabled": true
+    },
+    "seasonal_naive_cov": {
+      "available": true,
+      "reason": "ok",
+      "adapter": "baselines",
+      "enabled": true
+    },
+    "chronos": {
+      "available": true,
+      "reason": "chronos importable (cached)",
+      "adapter": "chronos",
+      "enabled": true
+    },
+    "chronos-small": {
+      "available": false,
+      "reason": "disabled in configs/models.yaml",
+      "adapter": "chronos",
+      "enabled": false
+    },
+    "chronos-lora-v1": {
+      "available": true,
+      "reason": "base + adapter available",
+      "adapter": "finetuned",
+      "enabled": true
+    },
+    "timesfm": {
+      "available": false,
+      "reason": "timesfm not importable (ModuleNotFoundError: No module named 'timesfm'); install the [fm] extra",
+      "adapter": "timesfm",
+      "enabled": true
+    },
+    "moirai": {
+      "available": false,
+      "reason": "uni2ts not importable (ModuleNotFoundError: No module named 'uni2ts'); install the [fm] extra",
+      "adapter": "moirai",
+      "enabled": true
+    }
+  },
+  "fast": false
+}

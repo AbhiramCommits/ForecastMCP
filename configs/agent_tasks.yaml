@@ -1,0 +1,99 @@
+# Agent-harness evaluation tasks. Ground truth comes from the frozen holdout:
+# the oracle is the best single model's per-window WQL in the benchmark run.
+tasks:
+  - id: t01
+    question: "What will demand for S001 look like over the next 4 weeks, with an 80% interval, using split 6?"
+    dataset: synthetic_supply
+    series_id: S001
+    horizon: 28
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 6
+    inject_failure: false
+  - id: t02
+    question: "Forecast S002 for the next 2 weeks with an 80% interval using split 6."
+    dataset: synthetic_supply
+    series_id: S002
+    horizon: 14
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 6
+    inject_failure: false
+  - id: t03
+    question: "Forecast S003 for the next 10 days with a 90% interval using split 6."
+    dataset: synthetic_supply
+    series_id: S003
+    horizon: 10
+    quantiles: [0.05, 0.5, 0.95]
+    window_id: 6
+    inject_failure: true
+  - id: t04
+    question: "What is the 4 week outlook for S004 with an 80% interval at split 5?"
+    dataset: synthetic_supply
+    series_id: S004
+    horizon: 28
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 5
+    inject_failure: false
+  - id: t05
+    question: "Forecast S005 for the next 3 weeks with an 80% interval using split 5."
+    dataset: synthetic_supply
+    series_id: S005
+    horizon: 21
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 5
+    inject_failure: false
+  - id: t06
+    question: "Forecast S006 for the next 7 days with a 50% interval using split 6."
+    dataset: synthetic_supply
+    series_id: S006
+    horizon: 7
+    quantiles: [0.25, 0.5, 0.75]
+    window_id: 6
+    inject_failure: false
+  - id: t07
+    question: "Give the 4 week forecast for S007 with a 90% interval at split 4."
+    dataset: synthetic_supply
+    series_id: S007
+    horizon: 28
+    quantiles: [0.05, 0.5, 0.95]
+    window_id: 4
+    inject_failure: true
+  - id: t08
+    question: "Forecast S008 for the next 2 weeks with an 80% interval using split 4."
+    dataset: synthetic_supply
+    series_id: S008
+    horizon: 14
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 4
+    inject_failure: false
+  - id: t09
+    question: "What will demand for S009 look like over the next 4 weeks with an 80% interval at split 3?"
+    dataset: synthetic_supply
+    series_id: S009
+    horizon: 28
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 3
+    inject_failure: false
+  - id: t10
+    question: "Forecast S010 for the next 3 weeks with a 90% interval using split 3."
+    dataset: synthetic_supply
+    series_id: S010
+    horizon: 21
+    quantiles: [0.05, 0.5, 0.95]
+    window_id: 3
+    inject_failure: false
+  - id: t11
+    question: "Forecast S011 for the next 4 weeks with an 80% interval using split 6."
+    dataset: synthetic_supply
+    series_id: S011
+    horizon: 28
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 6
+    inject_failure: true
+  - id: t12
+    question: "Forecast S012 for the next 2 weeks with an 80% interval using split 5."
+    dataset: synthetic_supply
+    series_id: S012
+    horizon: 14
+    quantiles: [0.1, 0.5, 0.9]
+    window_id: 5
+    inject_failure: false

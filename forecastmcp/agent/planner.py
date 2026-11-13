@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from forecastmcp.config import CONFIGS_DIR, read_yaml
 from forecastmcp.forecasters.registry import availability
 
-DEFAULT_MODELS = ["seasonal_naive", "chronos"]
+DEFAULT_MODELS = ["seasonal_naive", "autoets", "chronos"]
 
 
 class LLMPlan(BaseModel):
@@ -28,6 +28,7 @@ class LLMPlan(BaseModel):
     quantile_levels: list[float] = Field(min_length=3)
     models: list[str] = Field(min_length=2)
     method: str = "inverse_error"
+    window_id: int | None = None
 
 
 @dataclass
@@ -70,6 +71,12 @@ def detect_horizon(question: str) -> int:
     if "fortnight" in q:
         return 14
     return 28
+
+
+def detect_window(question: str) -> int | None:
+    """Parse an explicit frozen split id from the question ("split 4")."""
+    match = re.search(r"(?:split|window)\s*(\d+)", question, re.IGNORECASE)
+    return int(match.group(1)) if match else None
 
 
 def detect_quantiles(question: str) -> list[float]:
@@ -128,6 +135,7 @@ def rule_based_plan(
         quantile_levels=detect_quantiles(question),
         models=pick_models(question, dataset),
         method="inverse_error",
+        window_id=detect_window(question),
         source="rules",
     )
 
@@ -159,7 +167,8 @@ def llm_plan(
         f"Series ids (first 50): {series_ids[:50]}\n"
         f"Available models: {available_models}\n"
         "models must contain at least two names from the available list. method must be "
-        "vincentization, inverse_error or best_on_backtest."
+        "vincentization, inverse_error or best_on_backtest. Include window_id when the "
+        "question names a split."
     )
     body = json.dumps(
         {
@@ -199,6 +208,7 @@ def llm_plan(
             quantile_levels=parsed.quantile_levels,
             models=parsed.models,
             method=parsed.method,
+            window_id=parsed.window_id,
             source="llm",
         )
     except Exception:

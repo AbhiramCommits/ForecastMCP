@@ -326,6 +326,8 @@ class ForecastTools:
             frame = get_store().query(
                 "SELECT model, AVG(value) AS wql FROM metrics "
                 "WHERE dataset = ? AND series_id = ? AND metric = 'WQL' "
+                "AND run_id = (SELECT run_id FROM runs WHERE kind = 'benchmark' "
+                "ORDER BY created_at DESC LIMIT 1) "
                 "GROUP BY model",
                 [dataset, series_id],
             )
@@ -479,6 +481,8 @@ class ToolRuntime:
         self._counter = 0
         self.faults: dict[str, list[str]] = {}
         self.compactions = 0
+        self.attempts = 0
+        self.validation_failures = 0
 
     # -- fault injection for recovery evaluation ---------------------------
     def inject_failure(self, tool: str, message: str = "injected tool failure") -> None:
@@ -496,7 +500,12 @@ class ToolRuntime:
         """Validate, authorize, budget, execute and trace one tool call."""
         if tool not in INPUT_MODELS:
             raise KeyError(f"unknown tool {tool!r}")
-        validated = validate_input(tool, arguments)
+        self.attempts += 1
+        try:
+            validated = validate_input(tool, arguments)
+        except Exception:
+            self.validation_failures += 1
+            raise
         args = validated.model_dump(mode="json")
         if call_id is None:
             call_id = f"c{self._counter:04d}"

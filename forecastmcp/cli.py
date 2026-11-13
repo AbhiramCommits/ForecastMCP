@@ -36,9 +36,11 @@ app = typer.Typer(
 data_app = typer.Typer(no_args_is_help=True, help="Prepare and inspect datasets.")
 models_app = typer.Typer(no_args_is_help=True, help="Inspect the forecaster registry.")
 finetune_app = typer.Typer(no_args_is_help=True, help="LoRA fine-tuning utilities.")
+eval_app = typer.Typer(no_args_is_help=True, help="Benchmark, agent evaluation and plots.")
 app.add_typer(data_app, name="data")
 app.add_typer(models_app, name="models")
 app.add_typer(finetune_app, name="finetune")
+app.add_typer(eval_app, name="eval")
 
 
 def print_table(headers: list[str], rows: list[list[Any]]) -> None:
@@ -314,6 +316,114 @@ def finetune_compare(
     )
 
 
+def _csv(value: str | None) -> list[str] | None:
+    return [v.strip() for v in value.split(",") if v.strip()] if value else None
+
+
+@app.command("bench")
+def bench_cmd(
+    config: str = typer.Option("configs/benchmark.yaml", "--config", help="Benchmark YAML."),
+    run_id: str | None = typer.Option(None, "--run-id", help="Explicit benchmark run id."),
+    datasets: str | None = typer.Option(None, "--datasets", help="Comma-separated datasets."),
+    models: str | None = typer.Option(None, "--models", help="Comma-separated model names."),
+    series: int | None = typer.Option(None, "--series", min=1, help="Max series per dataset."),
+    windows: int | None = typer.Option(None, "--windows", min=1, help="Frozen windows to use."),
+    resamples: int = typer.Option(1000, "--resamples", min=50, help="Bootstrap resamples."),
+    fast: bool = typer.Option(False, "--fast", help="Small CI-friendly run."),
+) -> None:
+    """Run the full benchmark on the frozen holdout."""
+    from pathlib import Path
+
+    from forecastmcp.config import ROOT
+    from forecastmcp.eval.runner import run_benchmark
+
+    config_path = Path(config)
+    if not config_path.is_absolute():
+        config_path = ROOT / config_path
+    summary = run_benchmark(
+        config_path=config_path,
+        run_id=run_id,
+        fast=fast,
+        datasets=_csv(datasets),
+        models=_csv(models),
+        max_series=series,
+        n_windows=windows,
+        n_resamples=resamples,
+    )
+    for dataset, models_summary in summary["datasets"].items():
+        typer.secho(f"\n{dataset}", bold=True)
+        rows = []
+        for model, entry in models_summary.items():
+            if model.startswith("_"):
+                continue
+            wql = entry["WQL"]
+            rows.append(
+                [model, f"{wql['mean']:.4f}", f"{wql['ci_low']:.4f}",
+                 f"{wql['ci_high']:.4f}", f"{entry['median_latency_ms']:.1f}",
+                 f"{entry['estimated_cost_per_call_usd']:.6f}"]
+            )
+        print_table(["model", "WQL", "ci_low", "ci_high", "median_ms", "usd/call"], rows)
+    typer.echo(f"\nrun_id: {summary['run_id']} | results/summary.json written")
+
+
+@eval_app.command("agents")
+def eval_agents_cmd(
+    tasks: str = typer.Option("configs/agent_tasks.yaml", "--tasks", help="Task YAML."),
+    trials: int = typer.Option(3, "--trials", min=1, help="Repetitions per task."),
+    limit: int | None = typer.Option(None, "--limit", min=1, help="Limit number of tasks."),
+    prefix: str = typer.Option("agenteval", "--prefix", help="Run id prefix."),
+    benchmark_run: str | None = typer.Option(None, "--benchmark-run", help="Oracle run id."),
+) -> None:
+    """Score the agent harness on verifiable holdout tasks."""
+    from pathlib import Path
+
+    from forecastmcp.config import ROOT
+    from forecastmcp.eval.agent_eval import run_agent_eval
+
+    tasks_path = Path(tasks)
+    if not tasks_path.is_absolute():
+        tasks_path = ROOT / tasks_path
+    summary = run_agent_eval(
+        tasks_path=tasks_path,
+        trials=trials,
+        limit=limit,
+        prefix=prefix,
+        benchmark_run_id=benchmark_run,
+    )
+    rows = [
+        ["success_rate", summary["success_rate"]],
+        ["tool_call_validity_rate", summary["tool_call_validity_rate"]],
+        ["unsupported_number_rate", summary["unsupported_number_rate"]],
+        ["budget_adherence_rate", summary["budget_adherence_rate"]],
+        ["recovery_rate", summary["recovery_rate"]],
+        ["selection_regret", summary["selection_regret"]],
+        ["mean_latency_seconds", summary["mean_latency_seconds"]],
+        ["mean_cost_usd", summary["mean_cost_usd"]],
+    ]
+    print_table(["metric", "value"], rows)
+    typer.echo(f"runs={summary['n_runs']} -> results/agent_eval.json")
+
+
+@eval_app.command("plots")
+def eval_plots_cmd() -> None:
+    """Regenerate calibration, horizon and cost/accuracy figures."""
+    from forecastmcp.eval.plots import make_all_plots
+
+    paths = make_all_plots()
+    for path in paths:
+        typer.echo(str(path))
+
+
+@eval_app.command("summary")
+def eval_summary_cmd() -> None:
+    """Write results/summary.md and results/NEGATIVE_RESULTS.md from generated data."""
+    from forecastmcp.eval.summary import write_outputs
+
+    summary_path, negative_path = write_outputs()
+    typer.echo(str(summary_path))
+    typer.echo(str(negative_path))
+
+
 @app.command("version")
 def version_cmd() -> None:
     """Print the package version."""
@@ -322,13 +432,16 @@ def version_cmd() -> None:
 
 @app.command("serve")
 def serve_cmd(
+    transport: str = typer.Option("stdio", "--transport", help="stdio or streamable-http."),
+    host: str = typer.Option("127.0.0.1", "--host", help="HTTP bind host."),
+    port: int = typer.Option(8000, "--port", help="HTTP bind port."),
     role: str = typer.Option("analyst", "--role", help="Permission role (analyst|admin)."),
     run_id: str | None = typer.Option(None, "--run-id", help="Explicit trace run id."),
 ) -> None:
-    """Run the MCP server over stdio."""
-    from forecastmcp.mcp.server import serve_stdio
+    """Run the MCP server over stdio or Streamable HTTP."""
+    from forecastmcp.mcp.server import serve
 
-    serve_stdio(role=role, run_id=run_id)
+    serve(transport=transport, role=role, run_id=run_id, host=host, port=port)
 
 
 @app.command("ask")

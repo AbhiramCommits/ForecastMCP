@@ -1,0 +1,1236 @@
+{
+  "run_id": "benchmark",
+  "manifest": {
+    "run_id": "benchmark",
+    "seed": 42,
+    "n_resamples": 1000,
+    "eval_quantile_grid": [
+      0.05,
+      0.1,
+      0.2,
+      0.25,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.75,
+      0.8,
+      0.9,
+      0.95
+    ],
+    "datasets": {
+      "synthetic_supply": {
+        "n_series": 50,
+        "freq": "D",
+        "horizon": 28,
+        "n_windows": 6,
+        "window_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "models_requested": [
+          "seasonal_naive",
+          "autoets",
+          "autotheta",
+          "seasonal_naive_cov",
+          "chronos",
+          "chronos-lora-v1"
+        ],
+        "covariates": [
+          "promo",
+          "lead_time_days",
+          "unit_price",
+          "category",
+          "day_of_week",
+          "month",
+          "day_of_year",
+          "is_weekend",
+          "sin_annual_1",
+          "cos_annual_1",
+          "sin_annual_2",
+          "cos_annual_2",
+          "sin_week_1",
+          "cos_week_1"
+        ]
+      },
+      "m4_daily": {
+        "n_series": 23,
+        "freq": "D",
+        "horizon": 28,
+        "n_windows": 6,
+        "window_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "models_requested": [
+          "seasonal_naive",
+          "autoets",
+          "autotheta",
+          "chronos"
+        ],
+        "covariates": [
+          "promo",
+          "day_of_week",
+          "month",
+          "day_of_year",
+          "is_weekend",
+          "sin_annual_1",
+          "cos_annual_1",
+          "sin_annual_2",
+          "cos_annual_2",
+          "sin_week_1",
+          "cos_week_1"
+        ]
+      }
+    },
+    "unavailable_models": {
+      "synthetic_supply": {},
+      "m4_daily": {}
+    },
+    "model_availability": {
+      "seasonal_naive": {
+        "available": true,
+        "reason": "statsforecast importable",
+        "adapter": "baselines",
+        "enabled": true
+      },
+      "autoets": {
+        "available": true,
+        "reason": "statsforecast importable",
+        "adapter": "baselines",
+        "enabled": true
+      },
+      "autotheta": {
+        "available": true,
+        "reason": "statsforecast importable",
+        "adapter": "baselines",
+        "enabled": true
+      },
+      "seasonal_naive_cov": {
+        "available": true,
+        "reason": "ok",
+        "adapter": "baselines",
+        "enabled": true
+      },
+      "chronos": {
+        "available": true,
+        "reason": "chronos importable (cached)",
+        "adapter": "chronos",
+        "enabled": true
+      },
+      "chronos-small": {
+        "available": false,
+        "reason": "disabled in configs/models.yaml",
+        "adapter": "chronos",
+        "enabled": false
+      },
+      "chronos-lora-v1": {
+        "available": true,
+        "reason": "base + adapter available",
+        "adapter": "finetuned",
+        "enabled": true
+      },
+      "timesfm": {
+        "available": false,
+        "reason": "timesfm not importable (ModuleNotFoundError: No module named 'timesfm'); install the [fm] extra",
+        "adapter": "timesfm",
+        "enabled": true
+      },
+      "moirai": {
+        "available": false,
+        "reason": "uni2ts not importable (ModuleNotFoundError: No module named 'uni2ts'); install the [fm] extra",
+        "adapter": "moirai",
+        "enabled": true
+      }
+    },
+    "fast": false
+  },
+  "datasets": {
+    "synthetic_supply": {
+      "autoets": {
+        "WQL": {
+          "mean": 2.5660476622195016,
+          "ci_low": 1.907704217200305,
+          "ci_high": 3.2700893696692974,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 50.33442247179125,
+          "ci_low": 36.529964322889604,
+          "ci_high": 65.94014039719775,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.8845553371643041,
+          "ci_low": 0.8247306651141317,
+          "ci_high": 0.9459440121822651,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.5252380952380952,
+          "ci_low": 0.4721309523809523,
+          "ci_high": 0.5731011904761905,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.8434523809523808,
+          "ci_low": 0.8184494047619049,
+          "ci_high": 0.866907738095238,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.9210714285714287,
+          "ci_low": 0.9055892857142859,
+          "ci_high": 0.9357142857142858,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.35580129568776864,
+          "ci_low": 0.24386219704997605,
+          "ci_high": 0.48077306207762827,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 316.71744935883294,
+          "ci_low": 234.53498780519854,
+          "ci_high": 404.46146388641597,
+          "n_series": 50
+        },
+        "median_latency_ms": 656.204,
+        "estimated_cost_per_call_usd": 0.0006
+      },
+      "autotheta": {
+        "WQL": {
+          "mean": 2.612701688226478,
+          "ci_low": 1.960692848523911,
+          "ci_high": 3.319541030407266,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 50.817977737858236,
+          "ci_low": 37.12626876949883,
+          "ci_high": 66.47474805755292,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.9121218316754429,
+          "ci_low": 0.8536369066825976,
+          "ci_high": 0.9774907769948339,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.5138095238095237,
+          "ci_low": 0.46523511904761916,
+          "ci_high": 0.5596696428571428,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.8163095238095237,
+          "ci_low": 0.7888065476190474,
+          "ci_high": 0.8421488095238094,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.9066666666666667,
+          "ci_low": 0.8915208333333331,
+          "ci_high": 0.9220267857142856,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.3622685189473546,
+          "ci_low": 0.2496959380187093,
+          "ci_high": 0.48360770967259614,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 316.7065811450995,
+          "ci_low": 234.57034179010708,
+          "ci_high": 403.513403264984,
+          "n_series": 50
+        },
+        "median_latency_ms": 535.7635,
+        "estimated_cost_per_call_usd": 0.0005
+      },
+      "chronos": {
+        "WQL": {
+          "mean": 2.7966318872913023,
+          "ci_low": 2.1027754709384032,
+          "ci_high": 3.547811211239651,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 54.69225977957901,
+          "ci_low": 39.94226636954672,
+          "ci_high": 72.42754904549575,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.946047332662035,
+          "ci_low": 0.8888144049168067,
+          "ci_high": 1.0007545420762574,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.324404761904762,
+          "ci_low": 0.2960625,
+          "ci_high": 0.3548928571428571,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.5235714285714286,
+          "ci_low": 0.4803511904761905,
+          "ci_high": 0.5681160714285715,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.5925,
+          "ci_low": 0.5436815476190476,
+          "ci_high": 0.6407172619047619,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.3856524135453502,
+          "ci_low": 0.263914479797914,
+          "ci_high": 0.5103520652365136,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 367.1342094697487,
+          "ci_low": 270.86273002419944,
+          "ci_high": 479.86427071220317,
+          "n_series": 50
+        },
+        "median_latency_ms": 239.0765,
+        "estimated_cost_per_call_usd": 0.0004
+      },
+      "chronos-lora-v1": {
+        "WQL": {
+          "mean": 2.7914559929119593,
+          "ci_low": 2.078032222313551,
+          "ci_high": 3.554034857017839,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 54.782406328227154,
+          "ci_low": 39.59053383340128,
+          "ci_high": 72.50657228438257,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.9390640019951715,
+          "ci_low": 0.8822045355202375,
+          "ci_high": 0.9958967322836986,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.32595238095238094,
+          "ci_low": 0.29462797619047615,
+          "ci_high": 0.3569047619047619,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.5239285714285714,
+          "ci_low": 0.47963988095238097,
+          "ci_high": 0.5675089285714285,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.5954761904761905,
+          "ci_low": 0.546654761904762,
+          "ci_high": 0.643827380952381,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.4173258678036758,
+          "ci_low": 0.2775873985138927,
+          "ci_high": 0.5651427802723951,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 357.88748321122125,
+          "ci_low": 262.7212701557917,
+          "ci_high": 469.1377112723738,
+          "n_series": 50
+        },
+        "median_latency_ms": 285.3625,
+        "estimated_cost_per_call_usd": 0.00042
+      },
+      "ensemble_best_on_backtest": {
+        "WQL": {
+          "mean": 2.5660476622195016,
+          "ci_low": 1.907704217200305,
+          "ci_high": 3.2700893696692974,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 50.33442247179125,
+          "ci_low": 36.529964322889604,
+          "ci_high": 65.94014039719775,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.8845553371643041,
+          "ci_low": 0.8247306651141317,
+          "ci_high": 0.9459440121822651,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.5252380952380952,
+          "ci_low": 0.4721309523809523,
+          "ci_high": 0.5731011904761905,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.8434523809523808,
+          "ci_low": 0.8184494047619049,
+          "ci_high": 0.866907738095238,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.9210714285714287,
+          "ci_low": 0.9055892857142859,
+          "ci_high": 0.9357142857142858,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.35580129568776864,
+          "ci_low": 0.24386219704997605,
+          "ci_high": 0.48077306207762827,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 316.71744935883294,
+          "ci_low": 234.53498780519854,
+          "ci_high": 404.46146388641597,
+          "n_series": 50
+        },
+        "median_latency_ms": 1717.218,
+        "estimated_cost_per_call_usd": 0.00197
+      },
+      "ensemble_inverse_error": {
+        "WQL": {
+          "mean": 2.6096555111990694,
+          "ci_low": 1.9498306635918823,
+          "ci_high": 3.3267522702383725,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 50.531795804952964,
+          "ci_low": 36.84315474693266,
+          "ci_high": 66.6580830931703,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.8963421347531138,
+          "ci_low": 0.8404950536409738,
+          "ci_high": 0.9535900940780816,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.5353571428571429,
+          "ci_low": 0.5010565476190475,
+          "ci_high": 0.5694255952380954,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.8304761904761904,
+          "ci_low": 0.8108333333333334,
+          "ci_high": 0.8503571428571429,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.9144047619047619,
+          "ci_low": 0.903925595238095,
+          "ci_high": 0.9248809523809524,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.37467911333174775,
+          "ci_low": 0.2535331084388421,
+          "ci_high": 0.5059579647788205,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 314.6289072954305,
+          "ci_low": 233.58416651986792,
+          "ci_high": 403.82540131572046,
+          "n_series": 50
+        },
+        "median_latency_ms": 1717.218,
+        "estimated_cost_per_call_usd": 0.00197
+      },
+      "ensemble_vincentization": {
+        "WQL": {
+          "mean": 2.6508065746179814,
+          "ci_low": 1.9809804122364651,
+          "ci_high": 3.373307544430274,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 51.27805897588851,
+          "ci_low": 37.388372552154834,
+          "ci_high": 67.65050801257296,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 0.9068618397185695,
+          "ci_low": 0.8512804351166916,
+          "ci_high": 0.9640713253063635,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.5507142857142857,
+          "ci_low": 0.5173809523809524,
+          "ci_high": 0.5839285714285714,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.8369047619047619,
+          "ci_low": 0.8179761904761906,
+          "ci_high": 0.8552410714285715,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.9175000000000001,
+          "ci_low": 0.9070238095238095,
+          "ci_high": 0.9276190476190476,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.3776344264407054,
+          "ci_low": 0.2561052834727967,
+          "ci_high": 0.5089938514124379,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 322.6662941925146,
+          "ci_low": 239.2163835047783,
+          "ci_high": 414.9185956101404,
+          "n_series": 50
+        },
+        "median_latency_ms": 1717.218,
+        "estimated_cost_per_call_usd": 0.00197
+      },
+      "seasonal_naive": {
+        "WQL": {
+          "mean": 3.7609337487477807,
+          "ci_low": 2.890817302490333,
+          "ci_high": 4.710455169552394,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 72.41642070680031,
+          "ci_low": 53.52731961744318,
+          "ci_high": 93.84004567618496,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 1.155400622647908,
+          "ci_low": 1.0863573971044262,
+          "ci_high": 1.233956186533126,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.700595238095238,
+          "ci_low": 0.671779761904762,
+          "ci_high": 0.7284583333333332,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.9004761904761907,
+          "ci_low": 0.8854761904761906,
+          "ci_high": 0.9152440476190475,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.9475000000000001,
+          "ci_low": 0.9385714285714286,
+          "ci_high": 0.9557142857142857,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.37304191637480294,
+          "ci_low": 0.2754630508228975,
+          "ci_high": 0.4691948799250244,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 515.3037675870145,
+          "ci_low": 388.13671811019844,
+          "ci_high": 656.1453106747432,
+          "n_series": 50
+        },
+        "median_latency_ms": 0.4475,
+        "estimated_cost_per_call_usd": 2e-05
+      },
+      "seasonal_naive_cov": {
+        "WQL": {
+          "mean": 3.383295097527705,
+          "ci_low": 2.5121962661676855,
+          "ci_high": 4.328676607565985,
+          "n_series": 50
+        },
+        "CRPS": {
+          "mean": 64.58329403299618,
+          "ci_low": 46.606747482219305,
+          "ci_high": 85.62477542874272,
+          "n_series": 50
+        },
+        "MASE": {
+          "mean": 1.096804059238158,
+          "ci_low": 1.0279815143765363,
+          "ci_high": 1.1682461910919888,
+          "n_series": 50
+        },
+        "coverage_50": {
+          "mean": 0.4623809523809524,
+          "ci_low": 0.44309226190476186,
+          "ci_high": 0.48393154761904766,
+          "n_series": 50
+        },
+        "coverage_80": {
+          "mean": 0.7336904761904762,
+          "ci_low": 0.702610119047619,
+          "ci_high": 0.762625,
+          "n_series": 50
+        },
+        "coverage_90": {
+          "mean": 0.8404761904761904,
+          "ci_low": 0.8166636904761904,
+          "ci_high": 0.8634553571428571,
+          "n_series": 50
+        },
+        "sMAPE": {
+          "mean": 0.3647490674298649,
+          "ci_low": 0.26611240786191226,
+          "ci_high": 0.46155911659589577,
+          "n_series": 50
+        },
+        "winkler_80": {
+          "mean": 437.9592495140933,
+          "ci_low": 313.82842146337526,
+          "ci_high": 577.9289346720267,
+          "n_series": 50
+        },
+        "median_latency_ms": 0.364,
+        "estimated_cost_per_call_usd": 3e-05
+      },
+      "_best_single_model": "autoets"
+    },
+    "m4_daily": {
+      "autoets": {
+        "WQL": {
+          "mean": 0.5833876082997912,
+          "ci_low": 0.3694361003962427,
+          "ci_high": 0.8574900525507145,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 146.73534504558918,
+          "ci_low": 97.37307874199911,
+          "ci_high": 210.77250494140938,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 1.7018065537846732,
+          "ci_low": 1.29970135587031,
+          "ci_high": 2.1411544936471376,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.6172360248447205,
+          "ci_low": 0.5206909937888198,
+          "ci_high": 0.7142986542443065,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.8227225672877847,
+          "ci_low": 0.7499870600414079,
+          "ci_high": 0.8887357660455487,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.8887163561076604,
+          "ci_low": 0.826074016563147,
+          "ci_high": 0.9425530538302276,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.051877811891728555,
+          "ci_low": 0.03358171912600938,
+          "ci_high": 0.07759686015086967,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 1122.9658278572977,
+          "ci_low": 741.9346473583076,
+          "ci_high": 1566.4689112952362,
+          "n_series": 23
+        },
+        "median_latency_ms": 481.02099999999996,
+        "estimated_cost_per_call_usd": 0.0006
+      },
+      "autotheta": {
+        "WQL": {
+          "mean": 0.6529426960605345,
+          "ci_low": 0.4144401918871527,
+          "ci_high": 0.9559666652474965,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 161.25591143474847,
+          "ci_low": 106.45313739501998,
+          "ci_high": 235.14438930390386,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 1.7967731501205981,
+          "ci_low": 1.3779719743139769,
+          "ci_high": 2.2914769855415567,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.5838509316770186,
+          "ci_low": 0.48103002070393375,
+          "ci_high": 0.6871376811594202,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.7751035196687373,
+          "ci_low": 0.6847826086956523,
+          "ci_high": 0.8564117494824016,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.8436853002070394,
+          "ci_low": 0.7670742753623188,
+          "ci_high": 0.9133087474120083,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.05870180375693074,
+          "ci_low": 0.037107236851552226,
+          "ci_high": 0.09106552342897432,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 1209.6374149714354,
+          "ci_low": 794.5774397552278,
+          "ci_high": 1728.6385745318598,
+          "n_series": 23
+        },
+        "median_latency_ms": 160.161,
+        "estimated_cost_per_call_usd": 0.0005
+      },
+      "chronos": {
+        "WQL": {
+          "mean": 0.492104263637543,
+          "ci_low": 0.3389177175325059,
+          "ci_high": 0.6943323968705156,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 128.03274043642577,
+          "ci_low": 88.41702170007338,
+          "ci_high": 179.6454139928427,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 1.888570525512341,
+          "ci_low": 1.4261368791581412,
+          "ci_high": 2.359260484184594,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.3398033126293995,
+          "ci_low": 0.29552924430641825,
+          "ci_high": 0.3853778467908902,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.5791925465838509,
+          "ci_low": 0.5194034679089028,
+          "ci_high": 0.6348343685300207,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.6749482401656316,
+          "ci_low": 0.6146221532091097,
+          "ci_high": 0.7313729296066254,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.05210424640873784,
+          "ci_low": 0.036245503356100314,
+          "ci_high": 0.0718729805177837,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 959.0405469621932,
+          "ci_low": 655.8203890569463,
+          "ci_high": 1356.2828166108695,
+          "n_series": 23
+        },
+        "median_latency_ms": 141.265,
+        "estimated_cost_per_call_usd": 0.0004
+      },
+      "ensemble_best_on_backtest": {
+        "WQL": {
+          "mean": 0.492104263637543,
+          "ci_low": 0.3389177175325059,
+          "ci_high": 0.6943323968705156,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 128.03274043642577,
+          "ci_low": 88.41702170007338,
+          "ci_high": 179.6454139928427,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 1.721069326838923,
+          "ci_low": 1.3247092330963355,
+          "ci_high": 2.1612564065433837,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.3398033126293995,
+          "ci_low": 0.29552924430641825,
+          "ci_high": 0.3853778467908902,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.5791925465838509,
+          "ci_low": 0.5194034679089028,
+          "ci_high": 0.6348343685300207,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.6749482401656316,
+          "ci_low": 0.6146221532091097,
+          "ci_high": 0.7313729296066254,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.048759583894055,
+          "ci_low": 0.03338232219025156,
+          "ci_high": 0.06869300286094647,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 959.0405469621932,
+          "ci_low": 655.8203890569463,
+          "ci_high": 1356.2828166108695,
+          "n_series": 23
+        },
+        "median_latency_ms": 782.9499999999999,
+        "estimated_cost_per_call_usd": 0.0015199999999999999
+      },
+      "ensemble_inverse_error": {
+        "WQL": {
+          "mean": 0.5533812214482767,
+          "ci_low": 0.3678226260067471,
+          "ci_high": 0.7842863658588011,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 138.99226520045895,
+          "ci_low": 96.14475046180114,
+          "ci_high": 195.8476766756182,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 1.740718787065416,
+          "ci_low": 1.324084711808084,
+          "ci_high": 2.2121977678590614,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.5856625258799172,
+          "ci_low": 0.4885998964803312,
+          "ci_high": 0.6834886128364389,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.7836438923395446,
+          "ci_low": 0.7116977225672878,
+          "ci_high": 0.8506987577639752,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.8545548654244308,
+          "ci_low": 0.79217132505176,
+          "ci_high": 0.9109795548654245,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.051752134405407116,
+          "ci_low": 0.03417857283639252,
+          "ci_high": 0.07573125227990583,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 1014.6844167895517,
+          "ci_low": 699.3074587576237,
+          "ci_high": 1408.0917001071357,
+          "n_series": 23
+        },
+        "median_latency_ms": 782.9499999999999,
+        "estimated_cost_per_call_usd": 0.0015199999999999999
+      },
+      "ensemble_vincentization": {
+        "WQL": {
+          "mean": 0.5662096801000519,
+          "ci_low": 0.37587879017751213,
+          "ci_high": 0.7992289507021848,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 141.88101771750348,
+          "ci_low": 97.90418068792569,
+          "ci_high": 199.91370641101824,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 1.7553253333865717,
+          "ci_low": 1.3310170051779524,
+          "ci_high": 2.237978261698818,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.5944616977225673,
+          "ci_low": 0.495322204968944,
+          "ci_high": 0.6948757763975155,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.7857142857142856,
+          "ci_low": 0.7103972567287785,
+          "ci_high": 0.8540566770186335,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.8620600414078675,
+          "ci_low": 0.7983889751552796,
+          "ci_high": 0.9177018633540371,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.05240568820921119,
+          "ci_low": 0.03437739728899886,
+          "ci_high": 0.07722378278009928,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 1041.7018101626234,
+          "ci_low": 714.5935667035326,
+          "ci_high": 1443.114950714047,
+          "n_series": 23
+        },
+        "median_latency_ms": 782.9499999999999,
+        "estimated_cost_per_call_usd": 0.0015199999999999999
+      },
+      "seasonal_naive": {
+        "WQL": {
+          "mean": 0.7038045340903917,
+          "ci_low": 0.4606051583782525,
+          "ci_high": 0.9991209709388343,
+          "n_series": 23
+        },
+        "CRPS": {
+          "mean": 174.4503286863541,
+          "ci_low": 119.86487682414395,
+          "ci_high": 247.53353915084844,
+          "n_series": 23
+        },
+        "MASE": {
+          "mean": 2.1228162182315393,
+          "ci_low": 1.5543138119819688,
+          "ci_high": 2.7570094980634767,
+          "n_series": 23
+        },
+        "coverage_50": {
+          "mean": 0.5804865424430641,
+          "ci_low": 0.46783773291925473,
+          "ci_high": 0.6920419254658384,
+          "n_series": 23
+        },
+        "coverage_80": {
+          "mean": 0.7717391304347826,
+          "ci_low": 0.6668931159420289,
+          "ci_high": 0.8672748447204969,
+          "n_series": 23
+        },
+        "coverage_90": {
+          "mean": 0.8387681159420289,
+          "ci_low": 0.7496829710144929,
+          "ci_high": 0.9184847308488613,
+          "n_series": 23
+        },
+        "sMAPE": {
+          "mean": 0.06103978015453527,
+          "ci_low": 0.039462860110269615,
+          "ci_high": 0.09131197203204208,
+          "n_series": 23
+        },
+        "winkler_80": {
+          "mean": 1339.2904427591352,
+          "ci_low": 924.2703008655054,
+          "ci_high": 1837.2581034862085,
+          "n_series": 23
+        },
+        "median_latency_ms": 0.503,
+        "estimated_cost_per_call_usd": 2e-05
+      },
+      "_best_single_model": "chronos"
+    }
+  },
+  "paired_deltas": {
+    "synthetic_supply": {
+      "zero_shot_vs_lora:chronos-lora-v1_minus_chronos:WQL": {
+        "delta": -0.005175894379342623,
+        "ci_low": -0.05058070372819703,
+        "ci_high": 0.05330860052080487,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "zero_shot_vs_lora:chronos-lora-v1_minus_chronos:CRPS": {
+        "delta": 0.09014654864815239,
+        "ci_low": -0.8850557718678512,
+        "ci_high": 1.3824786595819432,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "zero_shot_vs_lora:chronos-lora-v1_minus_chronos:MASE": {
+        "delta": -0.0069833306668633495,
+        "ci_low": -0.01939875232731095,
+        "ci_high": 0.005521061389658837,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "zero_shot_vs_lora:chronos-lora-v1_minus_chronos:coverage_80": {
+        "delta": 0.0003571428571428531,
+        "ci_low": -0.012023809523809525,
+        "ci_high": 0.01322321428571428,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_autoets:WQL": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_autoets:CRPS": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_autoets:MASE": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_autoets:coverage_80": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_autoets:WQL": {
+        "delta": 0.04360784897956739,
+        "ci_low": 0.0058323773479953215,
+        "ci_high": 0.082983949111604,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_autoets:CRPS": {
+        "delta": 0.1973733331617169,
+        "ci_low": -0.6661762192423287,
+        "ci_high": 1.1051781869247332,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_autoets:MASE": {
+        "delta": 0.011786797588809572,
+        "ci_low": -0.002228446420722114,
+        "ci_high": 0.0259410834796894,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_autoets:coverage_80": {
+        "delta": -0.012976190476190473,
+        "ci_low": -0.029648809523809525,
+        "ci_high": 0.0045327380952381,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_autoets:WQL": {
+        "delta": 0.08475891239847946,
+        "ci_low": 0.03947589228658501,
+        "ci_high": 0.1314753157795417,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_autoets:CRPS": {
+        "delta": 0.9436365040972575,
+        "ci_low": 0.09138675864406323,
+        "ci_high": 1.9497298072916296,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_autoets:MASE": {
+        "delta": 0.02230650255426541,
+        "ci_low": 0.008209544644530227,
+        "ci_high": 0.037067846167723004,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_autoets:coverage_80": {
+        "delta": -0.006547619047619047,
+        "ci_low": -0.024291666666666687,
+        "ci_high": 0.0120297619047619,
+        "crosses_zero": true,
+        "n_series": 50
+      },
+      "with_vs_without_covariates:seasonal_naive_cov_minus_seasonal_naive:WQL": {
+        "delta": -0.3776386512200752,
+        "ci_low": -0.45984080726022314,
+        "ci_high": -0.30026383665553863,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "with_vs_without_covariates:seasonal_naive_cov_minus_seasonal_naive:CRPS": {
+        "delta": -7.833126673804119,
+        "ci_low": -10.021959576453462,
+        "ci_high": -5.75156680228837,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "with_vs_without_covariates:seasonal_naive_cov_minus_seasonal_naive:MASE": {
+        "delta": -0.058596563409750016,
+        "ci_low": -0.07358554969584084,
+        "ci_high": -0.04546586903225595,
+        "crosses_zero": false,
+        "n_series": 50
+      },
+      "with_vs_without_covariates:seasonal_naive_cov_minus_seasonal_naive:coverage_80": {
+        "delta": -0.16678571428571431,
+        "ci_low": -0.18797619047619046,
+        "ci_high": -0.14783630952380955,
+        "crosses_zero": false,
+        "n_series": 50
+      }
+    },
+    "m4_daily": {
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_chronos:WQL": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_chronos:CRPS": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_chronos:MASE": {
+        "delta": -0.16750119867341784,
+        "ci_low": -0.48898253775962097,
+        "ci_high": 0.006555862087340333,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_best_on_backtest_minus_chronos:coverage_80": {
+        "delta": 0.0,
+        "ci_low": 0.0,
+        "ci_high": 0.0,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_chronos:WQL": {
+        "delta": 0.06127695781073377,
+        "ci_low": -0.004666729958426942,
+        "ci_high": 0.14230815916520548,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_chronos:CRPS": {
+        "delta": 10.959524764033183,
+        "ci_low": -1.7113223720967494,
+        "ci_high": 24.699094062439652,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_chronos:MASE": {
+        "delta": -0.14785173844692484,
+        "ci_low": -0.5182796998016104,
+        "ci_high": 0.07912428668285836,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_inverse_error_minus_chronos:coverage_80": {
+        "delta": 0.2044513457556936,
+        "ci_low": 0.13275750517598348,
+        "ci_high": 0.2837021221532091,
+        "crosses_zero": false,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_chronos:WQL": {
+        "delta": 0.07410541646250907,
+        "ci_low": 0.0005950579767044221,
+        "ci_high": 0.1654481482920565,
+        "crosses_zero": false,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_chronos:CRPS": {
+        "delta": 13.848277281077719,
+        "ci_low": -0.3103603801383038,
+        "ci_high": 29.183937967505486,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_chronos:MASE": {
+        "delta": -0.13324519212576902,
+        "ci_low": -0.5066309810439531,
+        "ci_high": 0.10216132895920202,
+        "crosses_zero": true,
+        "n_series": 23
+      },
+      "ensemble_vs_best_single:ensemble_vincentization_minus_chronos:coverage_80": {
+        "delta": 0.20652173913043476,
+        "ci_low": 0.13119824016563145,
+        "ci_high": 0.288574016563147,
+        "crosses_zero": false,
+        "n_series": 23
+      }
+    }
+  },
+  "ablations": {
+    "zero_shot_vs_finetuned": "reported in paired_deltas under zero_shot_vs_lora",
+    "covariates": "seasonal_naive_cov vs seasonal_naive in paired_deltas; Chronos T5 does not consume covariates so no foundation-model covariate arm exists",
+    "univariate_vs_multivariate": {
+      "status": "unavailable",
+      "reason": "TimesFM and Moirai (the covariate/multivariate-capable adapters) are not installed; see unavailable_models"
+    },
+    "ensemble_vs_best_single": "reported in paired_deltas under ensemble_vs_best_single"
+  }
+}

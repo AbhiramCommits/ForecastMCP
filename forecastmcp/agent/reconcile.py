@@ -129,7 +129,9 @@ def combine(
             warnings.append(
                 "no backtest metrics available; fell back to equal-weight vincentization"
             )
-            return combine(results, method="vincentization")
+            fallback = combine(results, method="vincentization")
+            fallback.warnings = warnings + fallback.warnings
+            return fallback
         scores = {n: max(float(backtest_scores.get(n, np.inf)), 1e-9) for n in names}
         if method == "inverse_error":
             raw = {n: 1.0 / scores[n] for n in names}

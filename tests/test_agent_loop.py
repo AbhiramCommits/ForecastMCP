@@ -6,8 +6,18 @@ import asyncio
 import json
 
 from forecastmcp.agent.loop import ContextWindow, ForecastAgent
-from forecastmcp.agent.planner import detect_horizon, detect_quantiles, rule_based_plan
-from forecastmcp.agent.report import unsupported_number_rate, unsupported_numbers
+from forecastmcp.agent.planner import (
+    detect_horizon,
+    detect_quantiles,
+    make_plan,
+    rule_based_plan,
+)
+from forecastmcp.agent.reconcile import combine
+from forecastmcp.agent.report import (
+    citation_coverage,
+    unsupported_number_rate,
+    unsupported_numbers,
+)
 from forecastmcp.mcp.budgets import BudgetExceeded, BudgetGuard
 from forecastmcp.mcp.tools import ToolRuntime
 from forecastmcp.obs.replay import replay
@@ -34,6 +44,38 @@ def test_planner_horizon_and_quantile_parsing():
     assert detect_horizon("next 2 months") == 56
     assert detect_horizon("next fortnight") == 14
     assert detect_quantiles("95% interval") == [0.025, 0.5, 0.975]
+
+
+def test_make_plan_falls_back_without_api_key(monkeypatch):
+    """With no key, make_plan returns the deterministic rule-based plan."""
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    plan = make_plan(
+        "Forecast S002 for the next 2 weeks with an 80% interval",
+        "synthetic_supply",
+        ["S001", "S002"],
+        ["seasonal_naive", "autotheta"],
+    )
+    assert plan.source == "rules"
+    assert plan.series_id == "S002"
+    assert len(plan.models) >= 2
+    assert all(m in {"seasonal_naive", "autotheta"} for m in plan.models)
+
+
+def test_reconcile_falls_back_without_scores():
+    """Error-weighted reconciliation without metrics falls back and warns."""
+    from forecastmcp.forecasters.base import ForecastResult
+
+    def result(name, shift):
+        return ForecastResult(
+            series_id="S1", model_name=name, model_version=name, revision="1",
+            point=[10 + shift] * 3, quantile_levels=[0.1, 0.5, 0.9],
+            quantiles=[[8 + shift] * 3, [10 + shift] * 3, [12 + shift] * 3],
+            horizon=3, latency_ms=1.0,
+        )
+
+    combined = combine([result("a", 0), result("b", 2)], method="inverse_error")
+    assert combined.method == "vincentization"
+    assert any("fell back" in w for w in combined.warnings)
 
 
 def test_context_compaction_preserves_tail():
@@ -139,6 +181,7 @@ def test_full_agent_run_writes_cited_report(tmp_path, monkeypatch):
     records = [{"tool": c.tool, "call_id": c.call_id, "payload": c.payload} for c in result.calls]
     assert unsupported_number_rate(result.report, records) == 0.0
     assert "[call:" in result.report
+    assert citation_coverage(result.report, records) == 1.0
 
     report = replay("agent-e2e", base_dir=tmp_path)
     assert report.ok, report.details
