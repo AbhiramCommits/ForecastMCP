@@ -14,6 +14,7 @@ keywords = ["forecasting", "mcp", "timeseries", "chronos", "agents"]
 dependencies = [
   "torch>=2.2",
   "transformers>=4.40",
+  "chronos-forecasting>=1.4",
   "peft>=0.10",
   "accelerate>=0.30",
   "pydantic>=2.5",

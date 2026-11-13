@@ -18,8 +18,7 @@ RUN pip install --upgrade pip \
 
 COPY forecastmcp ./forecastmcp
 COPY configs ./configs
-RUN pip install . \
-    && pip install chronos-forecasting
+RUN pip install .
 
 RUN groupadd --gid 10001 app \
     && useradd --uid 10001 --gid app --create-home app \
