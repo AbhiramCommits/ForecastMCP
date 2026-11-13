@@ -1,0 +1,108 @@
+# Forecaster registry. Every adapter reads its checkpoint, device and cost here.
+# `cost_per_call_usd` is a deterministic estimate used by the budget guard and trace;
+# actual latency is measured per call and reported alongside it.
+models:
+  seasonal_naive:
+    adapter: baselines
+    checkpoint: statsforecast/SeasonalNaive
+    revision: statsforecast-2.1.1
+    context_length: 4096
+    device: cpu
+    cost_per_call_usd: 0.00002
+    n_params: 0
+    supports_covariates: false
+    training_domain: "classical seasonal-naive baseline"
+    description: "Repeat the value from one season ago; empirical residual quantiles."
+
+  autoets:
+    adapter: baselines
+    checkpoint: statsforecast/AutoETS
+    revision: statsforecast-2.1.1
+    context_length: 4096
+    device: cpu
+    cost_per_call_usd: 0.00060
+    n_params: 0
+    supports_covariates: false
+    training_domain: "classical exponential smoothing with automatic model selection"
+    description: "AutoETS (ZZZ) with model-native prediction intervals."
+
+  autotheta:
+    adapter: baselines
+    checkpoint: statsforecast/AutoTheta
+    revision: statsforecast-2.1.1
+    context_length: 4096
+    device: cpu
+    cost_per_call_usd: 0.00050
+    n_params: 0
+    supports_covariates: false
+    training_domain: "classical theta method"
+    description: "AutoTheta with model-native prediction intervals."
+
+  seasonal_naive_cov:
+    adapter: baselines
+    checkpoint: forecastmcp/seasonal-naive-promo
+    revision: "1"
+    context_length: 4096
+    device: cpu
+    cost_per_call_usd: 0.00003
+    n_params: 0
+    supports_covariates: true
+    training_domain: "classical seasonal naive with promotion uplift from history"
+    description: "Seasonal naive whose level is adjusted by a promo covariate lift; covariate ablation arm."
+
+  chronos:
+    adapter: chronos
+    checkpoint: amazon/chronos-t5-tiny
+    revision: main
+    context_length: 512
+    device: cpu
+    cost_per_call_usd: 0.00040
+    n_params: 8394496
+    supports_covariates: false
+    training_domain: "large-scale public time-series corpora (Chronos T5 tokenization)"
+    description: "Chronos T5 tiny, sampling-based quantiles, zero-shot."
+
+  chronos-small:
+    adapter: chronos
+    checkpoint: amazon/chronos-t5-small
+    revision: main
+    context_length: 512
+    device: cpu
+    cost_per_call_usd: 0.00120
+    supports_covariates: false
+    training_domain: "large-scale public time-series corpora (Chronos T5 tokenization)"
+    description: "Chronos T5 small, zero-shot (optional larger checkpoint)."
+    enabled: false
+
+  chronos-lora-v1:
+    adapter: finetuned
+    checkpoint: artifacts/finetune/v1
+    revision: "v1"
+    context_length: 512
+    device: cpu
+    cost_per_call_usd: 0.00042
+    supports_covariates: false
+    training_domain: "Chronos T5 tiny domain-adapted with LoRA on supply-chain demand"
+    description: "LoRA adapter trained on the synthetic supply-chain train split."
+
+  timesfm:
+    adapter: timesfm
+    checkpoint: google/timesfm-1.0-200m-pytorch
+    revision: main
+    context_length: 512
+    device: cpu
+    cost_per_call_usd: 0.00100
+    supports_covariates: false
+    training_domain: "Google TimesFM pretraining corpus"
+    description: "TimesFM decoder-only foundation model (optional extra `[fm]`)."
+
+  moirai:
+    adapter: moirai
+    checkpoint: Salesforce/moirai-1.0-R-small
+    revision: main
+    context_length: 512
+    device: cpu
+    cost_per_call_usd: 0.00130
+    supports_covariates: true
+    training_domain: "Salesforce Moirai universal time-series pretraining corpus"
+    description: "Moirai small via uni2ts, supports past/future covariates (optional extra `[fm]`)."

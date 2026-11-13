@@ -1,0 +1,29 @@
+# Cost model for traces and the BudgetGuard. Prices are deterministic estimates in USD.
+# Forecaster cost = max(configured per-call estimate, device-seconds * device_second_usd).
+device_second_usd:
+  cpu: 0.00002
+  mps: 0.00005
+  cuda: 0.00040
+
+forecasters:
+  seasonal_naive: 0.00002
+  autoets: 0.00060
+  autotheta: 0.00050
+  seasonal_naive_cov: 0.00003
+  chronos: 0.00040
+  chronos-small: 0.00120
+  chronos-lora-v1: 0.00042
+  timesfm: 0.00100
+  moirai: 0.00130
+
+llm:
+  # Anthropic API list prices (USD per 1K tokens), used only when a real key is present.
+  model: claude-sonnet-4-5
+  input_per_1k_usd: 0.003
+  output_per_1k_usd: 0.015
+
+budgets:
+  max_calls_per_run: 40
+  max_wall_clock_seconds: 900
+  max_cost_usd: 0.50
+  per_call_timeout_seconds: 120
